@@ -101,3 +101,9 @@ ENV/
 .mypy_cache/
 
 .idea
+.idea/codeStyles/
+.idea/dbnavigator.xml
+.idea/deeplearningzerotoall.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/workspace.xml
