@@ -11,14 +11,21 @@ X = tf.placeholder(tf.float32, [None, 784])
 # 0 - 9 digits recognition = 10 classes
 Y = tf.placeholder(tf.float32, [None, nb_classes])
 
-W = tf.Variable(tf.random_normal([784, nb_classes]))
-b = tf.Variable(tf.random_normal([nb_classes]))
+W1 = tf.get_variable("W1", shape=[784,256],initializer=tf.contrib.layers.xavier_initializer())
+b1 = tf.Variable(tf.random_normal([256]))
+L1 = tf.nn.relu(tf.matmul(X, W1) + b1)
 
-batch_xs, batch_ys = mnist.train.next_batch(100)
+W2 = tf.get_variable("W2", shape=[256,256], initializer=tf.contrib.layers.xavier_initializer())
+b2 = tf.Variable(tf.random_normal([256]))
+L2 = tf.nn.relu(tf.matmul(L1, W2) + b2)
 
-hypothesis = tf.nn.softmax(tf.matmul(X, W) + b)
-cost = tf.reduce_mean(-tf.reduce_sum(Y * tf.log(hypothesis), axis=1))
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.01).minimize(cost)
+W3 = tf.get_variable("W3", shape=[256,10], initializer=tf.contrib.layers.xavier_initializer())
+b3 = tf.Variable(tf.random_normal([nb_classes]))
+L3 = tf.nn.relu(tf.matmul(L2, W3) + b3)
+hypothesis = tf.matmul(L2, W3) + b3
+
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
+optimizer = tf.train.AdamOptimizer(learning_rate=0.01).minimize(cost)
 
 # Test model
 is_correct = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
@@ -26,8 +33,8 @@ is_correct = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
 accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
 
 # parameters
-training_epochs = 500
-batch_size = 500
+training_epochs = 100
+batch_size = 100
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())

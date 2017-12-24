@@ -14,11 +14,9 @@ Y = tf.placeholder(tf.float32, [None, nb_classes])
 W = tf.Variable(tf.random_normal([784, nb_classes]))
 b = tf.Variable(tf.random_normal([nb_classes]))
 
-batch_xs, batch_ys = mnist.train.next_batch(100)
-
 hypothesis = tf.nn.softmax(tf.matmul(X, W) + b)
-cost = tf.reduce_mean(-tf.reduce_sum(Y * tf.log(hypothesis), axis=1))
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.01).minimize(cost)
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
+optimizer = tf.train.AdamOptimizer(learning_rate=0.01).minimize(cost)
 
 # Test model
 is_correct = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(Y, 1))
